@@ -1,0 +1,81 @@
+
+<html>
+
+<head>
+
+<title>Karuba Tiles RNG</title>
+
+<script language="javascript">
+
+function arrayShuffle() {
+  var i = this.length, j, temp;
+  if (i === 0) return false;
+  while (--i) {
+    j = Math.floor(Math.random() * (i + 1));
+    temp = this[i];
+    this[i] = this[j];
+    this[j] = temp;
+  }
+}
+
+Array.prototype.shuffle=arrayShuffle;
+
+var numbers = new Array();
+var counter = 0;
+var start = 1;
+var end = 36;
+
+function resetGame() {
+  document.getElementById("divOutputId").innerHTML = "--start--";
+  document.getElementById("inputNextId").style.display = "block";
+  document.getElementById("inputResetId").style.display = "none";
+
+  numbers = new Array();
+  counter = 0;
+  for (var i = start; i <= end; i++) {
+    numbers.push(i);
+  }
+  numbers.shuffle();
+}
+
+function printNext() {
+  var outputDiv = document.getElementById("divOutputId");
+  var prevContent = outputDiv.innerHTML;
+  var popped = numbers.pop();
+  if(popped) {
+    var content = prevContent;
+    content += "<br/>"
+    content += "Turn " + (++counter) + ": " + popped;
+    outputDiv.innerHTML = content;
+    document.getElementById("inputNextId").focus();
+  } else {
+    outputDiv.innerHTML = prevContent + "<br/>--end--";
+    document.getElementById("inputNextId").style.display = "none";
+    document.getElementById("inputResetId").style.display = "block";
+  }
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function confirmResetGame() {
+  var val = confirm("reset game?");
+  if(val) {
+    resetGame();
+  }
+}
+
+</script>
+
+</head>
+
+<body onload="javascript:resetGame();">
+
+<h1>Karuba Tiles RNG</h1>
+
+<div id="divOutputId"></div>
+<input id="inputNextId" type="button" value="next" onclick="javascript:printNext();" style="display:block">
+<input id="inputResetId" type="button" value="reset" onclick="javascript:confirmResetGame();" style="display:none">
+
+</body>
+
+</html>
+
