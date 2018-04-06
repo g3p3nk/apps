@@ -24,11 +24,18 @@ var numbers = new Array();
 var counter = 0;
 var start = 1;
 var end = 36;
+var first = true;
+var currPopped = -99;
 
 function resetGame() {
   var withExpansion1 = document.getElementById("inputWithExpansion1Id").checked;
 
-  document.getElementById("divOutputId").innerHTML = "--start--";
+  first = true;
+  currPopped = -99;
+
+  document.getElementById("divPrevOutputId").innerHTML = "";
+  document.getElementById("divCurrOutputId").innerHTML = "";
+  document.getElementById("divEndId").style.display = "none";
   document.getElementById("inputNextId").style.display = "block";
   document.getElementById("inputResetId").style.display = "none";
 
@@ -49,21 +56,29 @@ function resetGame() {
 }
 
 function printNext() {
-  var outputDiv = document.getElementById("divOutputId");
-  var prevContent = outputDiv.innerHTML;
+  var prevOutputDiv = document.getElementById("divPrevOutputId");
+  var currOutputDiv = document.getElementById("divCurrOutputId");
+  var prevContent = prevOutputDiv.innerHTML;
   var popped = numbers.pop();
   if(popped) {
     var content = prevContent;
-    content += "<br/>"
-    content += "Turn " + (++counter) + ": " + popped;
-    outputDiv.innerHTML = content;
+    //content += "Turn " + (++counter) + ": " + popped;
+    if(first) {
+      first = false;
+    } else {
+      content += ", ";
+    }
+    content += popped;
+    prevOutputDiv.innerHTML = content;
+    currOutputDiv.innerHTML = "Round " + (++counter) + ": <span style=\"font-size:300%\">" + popped + "</span>";
     document.getElementById("inputNextId").focus();
   } else {
-    outputDiv.innerHTML = prevContent + "<br/>--end--";
+    document.getElementById("divCurrOutputId").innerHTML = "";
+    document.getElementById("divEndId").style.display = "block";
     document.getElementById("inputNextId").style.display = "none";
     document.getElementById("inputResetId").style.display = "block";
   }
-  window.scrollTo(0, document.body.scrollHeight);
+  //window.scrollTo(0, document.body.scrollHeight);
 }
 
 function confirmResetGame() {
@@ -82,12 +97,15 @@ function confirmResetGame() {
 <h1>Karuba Tiles RNG</h1>
 
 <div id="divSetupId">
-  <input id="inputWithExpansion1Id" type="checkbox" checked> With Expansion 1
+  <input id="inputWithExpansion1Id" type="checkbox"> With Expansion 1
   <input id="inputApplyId" type="button" value="apply" onclick="javascript:resetGame();" style="display:block">
 </div>
 
 <br />
-<div id="divOutputId"></div>
+<div id="divStartId">--start--</div>
+<div id="divPrevOutputId"></div>
+<div id="divCurrOutputId"></div>
+<div id="divEndId" style="display:none">--end--</div>
 <input id="inputNextId" type="button" value="next" onclick="javascript:printNext();" style="display:block">
 <input id="inputResetId" type="button" value="reset" onclick="javascript:confirmResetGame();" style="display:none">
 
