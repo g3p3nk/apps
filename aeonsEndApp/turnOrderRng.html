@@ -1,0 +1,106 @@
+
+<html>
+
+<head>
+
+<title>Aeon's End Turn Order</title>
+
+<script language="javascript">
+
+function arrayShuffle() {
+  var i = this.length, j, temp;
+  if (i === 0) return false;
+  while (--i) {
+    j = Math.floor(Math.random() * (i + 1));
+    temp = this[i];
+    this[i] = this[j];
+    this[j] = temp;
+  }
+}
+
+Array.prototype.shuffle=arrayShuffle;
+
+var myArray = new Array();
+var counter = 0;
+//var start = 1;
+//var end = 36;
+var first = true;
+var currPopped = -99;
+
+function resetGame() {
+  var flatCsv = document.getElementById("inputCsvText").value;
+  myArray = flatCsv.split(",");
+  myArray.push("Nemesis");
+  myArray.push("Nemesis");
+
+  first = true;
+  currPopped = -99;
+  counter = 0;
+
+  document.getElementById("divPrevOutputId").innerHTML = "";
+  document.getElementById("divCurrOutputId").innerHTML = "";
+  document.getElementById("divEndId").style.display = "none";
+  document.getElementById("inputNextId").style.display = "block";
+  document.getElementById("inputResetId").style.display = "none";
+
+  myArray.shuffle();
+}
+
+function printNext() {
+  var prevOutputDiv = document.getElementById("divPrevOutputId");
+  var currOutputDiv = document.getElementById("divCurrOutputId");
+  var prevContent = prevOutputDiv.innerHTML;
+  var popped = myArray.pop();
+  if(popped) {
+    var content = prevContent;
+    //content += "Turn " + (++counter) + ": " + popped;
+    if(first) {
+      first = false;
+    } else {
+      content += ", ";
+    }
+    content += popped;
+    prevOutputDiv.innerHTML = content;
+    currOutputDiv.innerHTML = "Round " + (++counter) + ": <span style=\"font-size:300%\">" + popped + "</span>";
+    document.getElementById("inputNextId").focus();
+  } else {
+    document.getElementById("divCurrOutputId").innerHTML = "";
+    document.getElementById("divEndId").style.display = "block";
+    document.getElementById("inputNextId").style.display = "none";
+    document.getElementById("inputResetId").style.display = "block";
+  }
+  //window.scrollTo(0, document.body.scrollHeight);
+}
+
+function confirmResetGame() {
+  //var val = confirm("reset game?");
+  if(true) {
+    resetGame();
+  }
+}
+
+</script>
+
+</head>
+
+<body onload="javascript:resetGame();">
+
+<h1>Aeon's End Turn Order</h1>
+
+<div id="divSetupId">
+  CSV Values: <input id="inputCsvText" type="text" size="25" value="Blue,Green,Red,Yellow">
+  <input id="inputApplyId" type="button" value="apply" onclick="javascript:resetGame();" style="display:block">
+</div>
+
+<br />
+<div id="divStartId">--start--</div>
+<div id="divPrevOutputId"></div>
+<div id="divCurrOutputId"></div>
+<div id="divEndId" style="display:none">--end--</div>
+<input id="inputNextId" type="button" value="next" onclick="javascript:printNext();" style="display:block">
+<input id="inputResetId" type="button" value="shuffle" onclick="javascript:confirmResetGame();" style="display:none">
+
+</body>
+
+</html>
+
