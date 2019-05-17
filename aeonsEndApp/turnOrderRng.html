@@ -30,8 +30,8 @@ var currPopped = -99;
 function resetGame() {
   var flatCsv = document.getElementById("inputCsvText").value;
   myArray = flatCsv.split(",");
-  myArray.push("Nemesis");
-  myArray.push("Nemesis");
+  myArray.push("Nemesis_1");
+  myArray.push("Nemesis_2");
 
   first = true;
   currPopped = -99;
@@ -79,6 +79,10 @@ function confirmResetGame() {
   }
 }
 
+function setCsvValues(theCsv) {
+  document.getElementById("inputCsvText").value = theCsv;
+}
+
 </script>
 
 </head>
@@ -88,6 +92,13 @@ function confirmResetGame() {
 <h1>Aeon's End Turn Order</h1>
 
 <div id="divSetupId">
+  <ul>
+    <li onclick="javascript:setCsvValues('Blue,Blue,Red,Red');">2 Players</li>
+    <li onclick="javascript:setCsvValues('Blue,Green,Red,Wild');">3 Players</li>
+    <li onclick="javascript:setCsvValues('Blue,Green,Red,Yellow');">4 Players (type a)</li>
+    <li onclick="javascript:setCsvValues('Blue/Red,Blue/Red,Green/Yellow,Green/Yellow');">4 Players (type b)</li>
+  </ul>
+
   CSV Values: <input id="inputCsvText" type="text" size="25" value="Blue,Green,Red,Yellow">
   <input id="inputApplyId" type="button" value="apply" onclick="javascript:resetGame();" style="display:block">
 </div>
