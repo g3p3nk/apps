@@ -7,6 +7,11 @@
 
     <style>
 
+      span {
+        font-weight: bold;
+        font-size: 1.125rem;
+      }
+
       .topContainer {
         height: 100%;
 
@@ -372,26 +377,56 @@
         }
       }
 
+      function redraw(deck, discardedValue) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return;
+        }
+
+        const { flipDeck, discardDeck } = deckSet;
+
+        const index = flipDeck.indexOf(discardedValue);
+        if (index !== -1) {
+          flipDeck.splice(index, 1);
+          discardDeck.push(discardedValue);
+          if (isDebug) { console.log(`Redrew ${discardedValue} from flipDeck to discardDeck.`); }
+        } else {
+          if (isDebug) { console.log(`Value ${discardedValue} not found in flipDeck.`); }
+        }
+      }
+
+
       function flipAll() {
         document.querySelectorAll(".playContainer .card").forEach(elBtn => {
-          if (elBtn.disabled) {
+          if (elBtn.classList.contains("flipped")) {
             return;
           }
           const deck = elBtn.getAttribute("data-deck");
           const card = flip(deck);
           if (card) {
+            elBtn.classList.add("flipped");
             elBtn.classList.add("number");
             elBtn.textContent = card;
-            elBtn.disabled = true;
+
+            const newElBtn = elBtn.cloneNode(true);
+            newElBtn.addEventListener("click", () => {
+                redraw(deck, card);
+                newElBtn.remove();
+                updateCurrentTotal();
+            });
+            elBtn.replaceWith(newElBtn);
           }
         });
+
+        updateCurrentTotal();
       }
 
       function cleanupAll() {
         document.querySelectorAll(".playContainer .card").forEach(elBtn => {
           const deck = elBtn.getAttribute("data-deck");
           let card = null;
-          if (elBtn.disabled) {
+          if (elBtn.classList.contains("flipped")) {
             card = discard(deck);
           } else {
             card = undo(deck);
@@ -400,6 +435,8 @@
             elBtn.remove();
           }
         });
+
+        updateCurrentTotal();
       }
 
       function updateDrawCount(deck) {
@@ -435,6 +472,26 @@
         document.getElementById(spanId).innerHTML = counter;
       }
 
+      function updateCurrentTotal() {
+        let total = 0;
+
+        document.querySelectorAll(".playContainer .card").forEach(elBtn => {
+          if (elBtn.classList.contains("number")) {
+            let text = elBtn.textContent.trim();
+            let match = text.match(/^\(?(\d+)\)?$/);
+
+            if (match) {
+              total += parseInt(match[1]);
+            } else {
+              console.log(`Skipping invalid number format: ${text}`);
+            }
+          }
+        });
+
+        const spanId = "currentTotal";
+        document.getElementById(spanId).innerHTML = total;
+      }
+
 
       function init() {
         document.getElementById("inputDebugModeId").addEventListener("click", (event) => {
@@ -449,7 +506,6 @@
         });
 
         document.querySelectorAll(".drawContainer .action.small").forEach(elBtn => {
-          console.log(elBtn);
           elBtn.addEventListener("click", (event) => {
             const deck = event.currentTarget.closest(".cardRow").getAttribute("data-deck");
             reshuffle(deck);
@@ -572,6 +628,7 @@
           <button id="buttonFlipAllId" class="action">Flip All</button>
           <button id="buttonCleanupAllId" class="action">Cleanup All</button>
         </div>
+        <div>Current total: <span id="currentTotal">0</span></div>
       </div>
 
     </div>
