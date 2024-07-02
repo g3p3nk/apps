@@ -1,0 +1,581 @@
+
+<html>
+
+  <head>
+
+    <title>OATHSWORN</title>
+
+    <style>
+
+      .topContainer {
+        height: 100%;
+
+        display: flex;
+
+        .drawContainer {
+          display: flex;
+          flex-direction: column;
+
+          .area {
+            padding: 10px;
+
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+
+            &.oathsworn {
+              background-color: #99bbad;
+            }
+
+            &.enemy {
+              background-color: #c6a9a3;
+            }
+
+            .cardRow {
+              display: flex;
+
+              .info {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              }
+            }
+
+          }
+        }
+
+        .playContainer {
+          padding: 10px;
+
+          display: flex;
+          flex: 1 1 auto;
+          flex-direction: column;
+          align-items: center;
+
+          background-color: #c3c6a8;
+
+          .area {
+            padding: 10px;
+
+            display: flex;
+            align-items: center;
+          }
+
+          .buttonGroup {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+
+      .card {
+        margin: 5px;
+
+        min-width: 100px;
+        min-height: 65px;
+        border-radius: 12px;
+
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        font-size: 0.875rem;
+        color: #000000;
+
+        &.white {
+          background: #edf6fd;
+        }
+
+        &.yellow {
+          background: #fed000;
+        }
+
+        &.red {
+          background: #e20000;
+          color: #e0e0e0;
+        }
+
+        &.black {
+          background: #070707;
+          color: #e0e0e0;
+        }
+
+        &.number {
+          font-size: 2.5rem;
+        }
+      }
+
+      .action {
+        margin: 10px;
+
+        min-width: 90px;
+        min-height: 45px;
+        border-radius: 24px;
+
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        background-color: #add8e6;
+        color: #000000;
+
+        &.small {
+          margin: 3px;
+
+          min-width: 60px;
+          min-height: 25px;
+          border-radius: 24px;
+
+          font-size: 0.875rem;
+        }
+      }
+
+    </style>
+
+    <script language="javascript">
+
+      function arrayShuffle() {
+        let i = this.length, j, temp;
+        if (i === 0) return false;
+        while (--i) {
+          j = Math.floor(Math.random() * (i + 1));
+          temp = this[i];
+          this[i] = this[j];
+          this[j] = temp;
+        }
+      }
+      Array.prototype.shuffle = arrayShuffle;
+
+
+      let isDebug = false;
+
+      const wDeck = [ "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "1", "2", "2", "2", "(2)", "(2)", "(2)" ];
+      const yDeck = [ "0", "0", "0", "0", "0", "0", "1", "1", "1", "2", "2", "2", "3", "3", "3", "(3)", "(3)", "(3)" ];
+      const rDeck = [ "0", "0", "0", "0", "0", "0", "2", "2", "2", "3", "3", "3", "3", "3", "3", "(4)", "(4)", "(4)" ];
+      const bDeck = [ "0", "0", "0", "0", "0", "0", "3", "3", "3", "3", "3", "3", "4", "4", "4", "(5)", "(5)", "(5)" ];
+
+      let owDrawDeck = wDeck.slice(); owDrawDeck.shuffle();
+      let oyDrawDeck = yDeck.slice(); oyDrawDeck.shuffle();
+      let orDrawDeck = rDeck.slice(); orDrawDeck.shuffle();
+      let obDrawDeck = bDeck.slice(); obDrawDeck.shuffle();
+      let owPlayDeck = [];
+      let oyPlayDeck = [];
+      let orPlayDeck = [];
+      let obPlayDeck = [];
+      let owFlipDeck = [];
+      let oyFlipDeck = [];
+      let orFlipDeck = [];
+      let obFlipDeck = [];
+      let owDiscardDeck = [];
+      let oyDiscardDeck = [];
+      let orDiscardDeck = [];
+      let obDiscardDeck = [];
+
+      let ewDrawDeck = wDeck.slice(); ewDrawDeck.shuffle();
+      let eyDrawDeck = yDeck.slice(); eyDrawDeck.shuffle();
+      let erDrawDeck = rDeck.slice(); erDrawDeck.shuffle();
+      let ebDrawDeck = bDeck.slice(); ebDrawDeck.shuffle();
+      let ewPlayDeck = [];
+      let eyPlayDeck = [];
+      let erPlayDeck = [];
+      let ebPlayDeck = [];
+      let ewFlipDeck = [];
+      let eyFlipDeck = [];
+      let erFlipDeck = [];
+      let ebFlipDeck = [];
+      let ewDiscardDeck = [];
+      let eyDiscardDeck = [];
+      let erDiscardDeck = [];
+      let ebDiscardDeck = [];
+
+
+      const decks = {
+        ow: { drawDeck: owDrawDeck, playDeck: owPlayDeck, flipDeck: owFlipDeck, discardDeck: owDiscardDeck },
+        oy: { drawDeck: oyDrawDeck, playDeck: oyPlayDeck, flipDeck: oyFlipDeck, discardDeck: oyDiscardDeck },
+        or: { drawDeck: orDrawDeck, playDeck: orPlayDeck, flipDeck: orFlipDeck, discardDeck: orDiscardDeck },
+        ob: { drawDeck: obDrawDeck, playDeck: obPlayDeck, flipDeck: obFlipDeck, discardDeck: obDiscardDeck },
+        ew: { drawDeck: ewDrawDeck, playDeck: ewPlayDeck, flipDeck: ewFlipDeck, discardDeck: ewDiscardDeck },
+        ey: { drawDeck: eyDrawDeck, playDeck: eyPlayDeck, flipDeck: eyFlipDeck, discardDeck: eyDiscardDeck },
+        er: { drawDeck: erDrawDeck, playDeck: erPlayDeck, flipDeck: erFlipDeck, discardDeck: erDiscardDeck },
+        eb: { drawDeck: ebDrawDeck, playDeck: ebPlayDeck, flipDeck: ebFlipDeck, discardDeck: ebDiscardDeck },
+      };
+
+      function addPlayButton(deck) {
+        const cardColor = getCardColor(deck);
+
+        const elBtn = document.createElement("button");
+        elBtn.classList.add("card");
+        elBtn.classList.add(`${cardColor}`);
+        elBtn.setAttribute("data-deck", deck);
+        elBtn.textContent = `${getCardText(deck)} -`;
+
+        elBtn.addEventListener("click", () => {
+          undo(deck);
+          elBtn.remove();
+        });
+
+        document.getElementById(`divPlayId_${cardColor}`).appendChild(elBtn);
+      }
+
+      function getCardText(deck) {
+        switch (deck) {
+          case 'ow':
+          case 'oy':
+          case 'or':
+          case 'ob':
+            return 'Oathsworn';
+          case 'ew':
+          case 'ey':
+          case 'er':
+          case 'eb':
+            return 'Enemy';
+          default:
+            return '';
+        }
+      }
+
+      function getCardColor(deck) {
+        switch (deck) {
+          case 'ow':
+          case 'ew':
+            return 'white';
+          case 'oy':
+          case 'ey':
+            return 'yellow';
+          case 'or':
+          case 'er':
+            return 'red';
+          case 'ob':
+          case 'eb':
+            return 'black';
+          default:
+            return '';
+        }
+      }
+
+
+      function draw(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return null;
+        }
+
+        const { drawDeck, playDeck } = deckSet;
+
+        if (drawDeck.length > 0) {
+          const card = drawDeck.pop();
+          playDeck.push(card);
+          if (isDebug) { console.log(`Drew ${deck} card: ${card}`); }
+          addPlayButton(deck);
+          updateDrawCount(deck);
+          return card;
+        } else {
+          console.log(`No more cards in the ${deck} draw deck.`);
+          let isAutoReshuffle = document.getElementById("inputAutoReshuffleId").checked;
+          if (isAutoReshuffle || confirm(`Reshuffle and draw from ${getCardColor(deck)} ${getCardText(deck)} deck?`)) {
+            if (reshuffle(deck)) {
+              return draw(deck);
+            }
+          }
+          return null;
+        }
+      }
+
+      function undo(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return null;
+        }
+
+        const { drawDeck, playDeck } = deckSet;
+
+        if (playDeck.length > 0) {
+          const card = playDeck.pop();
+          drawDeck.push(card);
+          if (isDebug) { console.log(`Undo ${deck} card: ${card}`); }
+          updateDrawCount(deck);
+          return card;
+        } else {
+          console.log(`No more cards in the ${deck} play deck.`);
+          return null;
+        }
+      }
+
+      function flip(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return null;
+        }
+
+        const { playDeck, flipDeck } = deckSet;
+
+        if (playDeck.length > 0) {
+            const card = playDeck.pop();
+            flipDeck.push(card);
+            if (isDebug) { console.log(`Flipped ${deck} card: ${card}`); }
+            return card;
+        } else {
+            console.log(`No more cards in the ${deck} play deck.`);
+            return null;
+        }
+      }
+
+      function discard(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return null;
+        }
+
+        const { flipDeck, discardDeck } = deckSet;
+
+        if (flipDeck.length > 0) {
+          const card = flipDeck.pop();
+          discardDeck.push(card);
+          if (isDebug) { console.log(`Discarded ${deck} card: ${card}`); }
+          updateMissesCount(deck);
+          return card;
+        }
+        console.log(`No more cards in the ${deck} flip deck.`);
+        return null;
+      }
+
+      function reshuffle(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return false;
+        }
+
+        const { drawDeck, discardDeck } = deckSet;
+
+        if (drawDeck.length === 0 && discardDeck.length === 0) {
+          console.log(`Both draw and discard decks for ${deck} are empty. Cannot reshuffle.`);
+          return false;
+        } else {
+          const combinedDeck = drawDeck.concat(discardDeck);
+          combinedDeck.shuffle();
+          deckSet.drawDeck = combinedDeck;
+          discardDeck.length = 0; // Clear the discardDeck array
+          console.log(`Reshuffled ${deck} discard deck and draw deck into a new draw deck.`);
+          updateDrawCount(deck);
+          updateMissesCount(deck);
+          return true;
+        }
+      }
+
+      function flipAll() {
+        document.querySelectorAll(".playContainer .card").forEach(elBtn => {
+          if (elBtn.disabled) {
+            return;
+          }
+          const deck = elBtn.getAttribute("data-deck");
+          const card = flip(deck);
+          if (card) {
+            elBtn.classList.add("number");
+            elBtn.textContent = card;
+            elBtn.disabled = true;
+          }
+        });
+      }
+
+      function cleanupAll() {
+        document.querySelectorAll(".playContainer .card").forEach(elBtn => {
+          const deck = elBtn.getAttribute("data-deck");
+          let card = null;
+          if (elBtn.disabled) {
+            card = discard(deck);
+          } else {
+            card = undo(deck);
+          }
+          if (card) {
+            elBtn.remove();
+          }
+        });
+      }
+
+      function updateDrawCount(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return false;
+        }
+
+        const { drawDeck } = deckSet;
+
+        const spanId = `${deck}DrawCount`;
+        document.getElementById(spanId).innerHTML = drawDeck.length;
+      }
+
+      function updateMissesCount(deck) {
+        const deckSet = decks[deck];
+        if (!deckSet) {
+          console.log(`Invalid deck: ${deck}`);
+          return false;
+        }
+
+        const { discardDeck } = deckSet;
+
+        let counter = 0;
+        for (let i = 0; i < discardDeck.length; i++) {
+          if (discardDeck[i] === "0") {
+            counter++;
+          }
+        }
+
+        const spanId = `${deck}MissesCount`;
+        document.getElementById(spanId).innerHTML = counter;
+      }
+
+
+      function init() {
+        document.getElementById("inputDebugModeId").addEventListener("click", (event) => {
+          isDebug = event.currentTarget.checked;
+        });
+
+        document.querySelectorAll(".drawContainer .card").forEach(elBtn => {
+          elBtn.addEventListener("click", (event) => {
+            const deck = event.currentTarget.closest(".cardRow").getAttribute("data-deck");
+            draw(deck);
+          });
+        });
+
+        document.querySelectorAll(".drawContainer .action.small").forEach(elBtn => {
+          console.log(elBtn);
+          elBtn.addEventListener("click", (event) => {
+            const deck = event.currentTarget.closest(".cardRow").getAttribute("data-deck");
+            reshuffle(deck);
+          });
+        });
+
+        document.getElementById("buttonFlipAllId").addEventListener("click", () => {
+          flipAll();
+        });
+        document.getElementById("buttonCleanupAllId").addEventListener("click", () => {
+          cleanupAll();
+        });
+      }
+
+    </script>
+
+  </head>
+
+  <body onload="init();">
+
+    <h1>OATHSWORN: INTO THE DEEPWOOD</h1>
+    <div class="optionGroup">
+      <table>
+        <tr>
+          <td>Auto reshuffle?</td>
+          <td><input id="inputAutoReshuffleId" type="checkbox" checked /></td>
+        </tr>
+        <tr>
+          <td>Debug mode?</td>
+          <td><input id="inputDebugModeId" type="checkbox" /></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="topContainer">
+
+      <div class="drawContainer">
+        <div class="area oathsworn">
+          <h2>Oathsworn Might Deck</h2>
+          <div class="cardRow" data-deck="ow">
+            <button class="card white">Oathsworn +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="owDrawCount">18</span></div>
+              <div>Misses in discard: <span id="owMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+          <div class="cardRow" data-deck="oy">
+            <button class="card yellow">Oathsworn +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="oyDrawCount">18</span></div>
+              <div>Misses in discard: <span id="oyMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+          <div class="cardRow" data-deck="or">
+            <button class="card red">Oathsworn +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="orDrawCount">18</span></div>
+              <div>Misses in discard: <span id="orMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+          <div class="cardRow" data-deck="ob">
+            <button class="card black">Oathsworn +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="obDrawCount">18</span></div>
+              <div>Misses in discard: <span id="obMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="area enemy">
+          <h2>Enemy Might Deck</h2>
+          <div class="cardRow" data-deck="ew">
+            <button class="card white">Enemy +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="ewDrawCount">18</span></div>
+              <div>Misses in discard: <span id="ewMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+          <div class="cardRow" data-deck="ey">
+            <button class="card yellow">Enemy +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="eyDrawCount">18</span></div>
+              <div>Misses in discard: <span id="eyMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+          <div class="cardRow" data-deck="er">
+            <button class="card red">Enemy +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="erDrawCount">18</span></div>
+              <div>Misses in discard: <span id="erMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+          <div class="cardRow" data-deck="eb">
+            <button class="card black">Enemy +</button>
+            <div class="info">
+              <div>Cards in the deck: <span id="ebDrawCount">18</span></div>
+              <div>Misses in discard: <span id="ebMissesCount">0</span> (of 6)</div>
+              <div><button class="action small">Reshuffle</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="playContainer">
+        <h2>In Play</h2>
+        <div class="area">
+          <div id="divPlayId_white"></div>
+          <div id="divPlayId_yellow"></div>
+          <div id="divPlayId_red"></div>
+          <div id="divPlayId_black"></div>
+        </div>
+        <div class=buttonGroup>
+          <button id="buttonFlipAllId" class="action">Flip All</button>
+          <button id="buttonCleanupAllId" class="action">Cleanup All</button>
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
