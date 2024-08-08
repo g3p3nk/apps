@@ -391,6 +391,7 @@
           flipDeck.splice(index, 1);
           discardDeck.push(discardedValue);
           if (isDebug) { console.log(`Redrew ${discardedValue} from flipDeck to discardDeck.`); }
+          updateMissesCount(deck);
         } else {
           if (isDebug) { console.log(`Value ${discardedValue} not found in flipDeck.`); }
         }
