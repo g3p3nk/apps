@@ -157,6 +157,7 @@
       Array.prototype.shuffle = arrayShuffle;
 
 
+      let isAutoReshuffle = true;
       let isDebug = false;
 
       const wDeck = [ "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "1", "2", "2", "2", "(2)", "(2)", "(2)" ];
@@ -282,7 +283,6 @@
           return card;
         } else {
           console.log(`No more cards in the ${deck} draw deck.`);
-          let isAutoReshuffle = document.getElementById("inputAutoReshuffleId").checked;
           if (isAutoReshuffle || confirm(`Reshuffle and draw from ${getCardColor(deck)} ${getCardText(deck)} deck?`)) {
             if (reshuffle(deck)) {
               return draw(deck);
@@ -438,6 +438,10 @@
         });
 
         updateCurrentTotal();
+
+        if (isAutoReshuffle) {
+          autoReshuffleEmptyDecks();
+        }
       }
 
       function updateDrawCount(deck) {
@@ -493,8 +497,20 @@
         document.getElementById(spanId).innerHTML = total;
       }
 
+      function autoReshuffleEmptyDecks() {
+        for (const deck in decks) {
+          if (decks[deck].drawDeck.length === 0) {
+            reshuffle(deck);
+          }
+        }
+      }
+
 
       function init() {
+        document.getElementById("inputAutoReshuffleId").addEventListener("click", (event) => {
+          isAutoReshuffle = event.currentTarget.checked;
+        });
+
         document.getElementById("inputDebugModeId").addEventListener("click", (event) => {
           isDebug = event.currentTarget.checked;
         });
