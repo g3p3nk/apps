@@ -440,7 +440,7 @@
         updateCurrentTotal();
 
         if (isAutoReshuffle) {
-          autoReshuffleEmptyDecks();
+          reshuffleAllEmptyDrawDecks();
         }
       }
 
@@ -497,7 +497,7 @@
         document.getElementById(spanId).innerHTML = total;
       }
 
-      function autoReshuffleEmptyDecks() {
+      function reshuffleAllEmptyDrawDecks() {
         for (const deck in decks) {
           if (decks[deck].drawDeck.length === 0) {
             reshuffle(deck);
